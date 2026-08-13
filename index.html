@@ -1,21 +1,36 @@
 <!doctype html>
 <html lang="es">
+
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
   <meta name="theme-color" content="#1f3d59">
 
   <title>Calculadora de clicks</title>
 
-  <!-- Para que al agregarla al iPhone use tu logotipo como icono -->
+  <!-- Icono al agregar la página a la pantalla de inicio del iPhone -->
   <link rel="apple-touch-icon" href="logo.png.PNG">
 
-  <!-- Apariencia tipo app al abrir desde la pantalla de inicio -->
+  <!-- Apariencia tipo app en iPhone -->
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Calculadora">
+
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="default"
+  >
+
+  <meta
+    name="apple-mobile-web-app-title"
+    content="Calculadora"
+  >
 
   <style>
+
     :root {
       --navy: #1f3d59;
       --text: #202a33;
@@ -30,380 +45,866 @@
       --shadow: 0 14px 40px rgba(20, 38, 55, 0.10);
     }
 
+
     * {
       box-sizing: border-box;
     }
 
-    html, body {
+
+    html,
+    body {
       min-height: 100%;
     }
 
+
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                   "Helvetica Neue", Arial, sans-serif;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "SF Pro Text",
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
+
       color: var(--text);
+
       background: #f6f8fa;
+
       -webkit-font-smoothing: antialiased;
+
       position: relative;
     }
 
-    /* Marca de agua fija: sube tu logotipo como "logo.png" */
-    body::before {
-      content: "";
+
+    /*
+    =====================================================
+    MARCA DE AGUA
+    =====================================================
+
+    El logo permanece fijo en el centro de la pantalla.
+
+    Si quiere hacerlo MÁS visible:
+    cambie opacity: 0.08 por 0.10 o 0.12
+
+    Si quiere hacerlo MÁS tenue:
+    cambie opacity: 0.08 por 0.05 o 0.06
+    */
+
+    .watermark {
       position: fixed;
-      inset: 0;
+
+      top: 50%;
+      left: 50%;
+
+      transform: translate(-50%, -50%);
+
+      width: min(62vw, 380px);
+      height: min(62vw, 380px);
+
       background-image: url("logo.png.PNG");
       background-repeat: no-repeat;
-      background-position: center center;
-      background-size: min(68vw, 430px);
-      opacity: 0.055;
+      background-position: center;
+      background-size: contain;
+
+      opacity: 0.08;
+
       pointer-events: none;
-      z-index: 0;
+
+      z-index: 999;
+
+      mix-blend-mode: multiply;
     }
+
 
     .page {
       position: relative;
+
       z-index: 1;
+
       min-height: 100svh;
+
       display: flex;
+
       justify-content: center;
+
       align-items: flex-start;
+
       padding:
         max(24px, env(safe-area-inset-top))
         16px
         max(28px, env(safe-area-inset-bottom));
     }
 
+
     .card {
       width: min(100%, 760px);
-      background: rgba(255, 255, 255, 0.94);
+
+      background: rgba(255, 255, 255, 0.96);
+
       border: 1px solid #aeb7bd;
+
       box-shadow: var(--shadow);
+
       padding: 0 42px 30px;
+
       margin-top: 18px;
-      backdrop-filter: blur(1.5px);
-      -webkit-backdrop-filter: blur(1.5px);
+
+      position: relative;
     }
+
 
     .title {
       margin: 0 -1px;
+
       background: var(--navy);
+
       color: white;
+
       text-align: center;
+
       font-weight: 800;
+
       letter-spacing: 0.2px;
+
       font-size: clamp(25px, 4.2vw, 34px);
+
       line-height: 1.1;
+
       padding: 16px 14px;
+
       text-transform: uppercase;
     }
 
+
     .subtitle {
       max-width: 650px;
+
       margin: 17px auto 52px;
+
       text-align: center;
+
       font-size: clamp(15px, 2.5vw, 19px);
+
       line-height: 1.25;
+
       font-style: italic;
+
       color: #30373d;
     }
 
+
     .calculator {
       display: grid;
+
       gap: 44px;
     }
 
+
     .row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 200px;
+
+      grid-template-columns:
+        minmax(0, 1fr)
+        200px;
+
       min-height: 50px;
+
       border: 1px solid var(--line);
+
       background: white;
     }
+
 
     .row.pen .label {
       background: var(--blue-row);
     }
 
+
     .row.dose .label {
       background: var(--teal-row);
     }
 
+
     .row.result {
       margin-top: 4px;
-      grid-template-columns: minmax(0, 1fr) 200px;
+
+      grid-template-columns:
+        minmax(0, 1fr)
+        200px;
+
       background: var(--green-row);
     }
+
 
     .row.result .label,
     .row.result .value {
       background: var(--green-row);
     }
 
+
     .label {
       display: flex;
+
       align-items: center;
+
       padding: 8px 12px;
+
       font-size: clamp(17px, 3vw, 22px);
+
       font-weight: 700;
+
       line-height: 1.15;
     }
 
+
     .control {
       position: relative;
+
       display: flex;
+
       align-items: stretch;
+
       background: white;
+
       border-left: 1px solid var(--line);
     }
+
 
     select {
       width: 100%;
+
       min-height: 48px;
+
       border: 0;
+
       outline: none;
+
       background: white;
+
       color: #1515e8;
+
       font: inherit;
+
       font-size: clamp(18px, 3.4vw, 23px);
+
       font-weight: 800;
+
       text-align: center;
+
       text-align-last: center;
+
       padding: 7px 36px 7px 12px;
+
       appearance: none;
+
       -webkit-appearance: none;
+
       cursor: pointer;
     }
 
+
+    /*
+    Pequeño triángulo amarillo del menú
+    */
+
     .control::after {
       content: "";
+
       position: absolute;
+
       right: 7px;
+
       top: 7px;
+
       width: 0;
+
       height: 0;
+
       border-left: 9px solid transparent;
+
       border-top: 9px solid #f5e76d;
+
       pointer-events: none;
-      filter: drop-shadow(0 0 0.3px #a99d47);
+
+      filter: drop-shadow(
+        0 0 0.3px #a99d47
+      );
     }
+
 
     .value {
       display: flex;
+
       align-items: center;
+
       justify-content: center;
+
       min-height: 52px;
+
       border-left: 1px solid var(--line);
+
       font-size: clamp(23px, 4vw, 31px);
+
       font-weight: 850;
+
       color: #050505;
+
       text-align: center;
+
       padding: 5px 10px;
+
       white-space: nowrap;
     }
 
+
     .divider {
       height: 1px;
+
       background: #cfd5d9;
+
       margin: 43px 0;
     }
 
+
     .formula {
       background: var(--purple-box);
+
       border: 1px solid #cfc7dd;
+
       padding: 11px 14px;
+
       text-align: center;
+
       font-size: clamp(14px, 2.6vw, 17px);
+
       line-height: 1.3;
+
       font-weight: 750;
     }
 
+
+    /*
+    =====================================================
+    AVISO IMPORTANTE
+    =====================================================
+    */
+
     .disclaimer {
       margin-top: 42px;
+
       background: var(--cream-box);
+
       border: 1px solid #ddcfb7;
-      padding: 22px 18px;
-      text-align: center;
-      font-size: clamp(13px, 2.4vw, 16px);
-      line-height: 1.35;
-      color: #8b5726;
-      font-style: italic;
+
+      padding: 22px 20px;
+
+      color: #6d451f;
+
+      font-size: clamp(12px, 2.2vw, 15px);
+
+      line-height: 1.48;
+
+      text-align: left;
+
+      font-style: normal;
     }
 
-    .watermark-note {
-      margin-top: 16px;
+
+    .disclaimer-title {
+      display: block;
+
       text-align: center;
-      font-size: 11px;
-      color: #8c969d;
+
+      font-size: clamp(15px, 2.7vw, 18px);
+
+      font-weight: 800;
+
+      color: #70451c;
+
+      margin-bottom: 14px;
+
+      letter-spacing: 0.2px;
     }
+
+
+    .disclaimer p {
+      margin:
+
+        0
+        0
+        12px
+        0;
+    }
+
+
+    .disclaimer p:last-child {
+      margin-bottom: 0;
+    }
+
+
+    .disclaimer strong {
+      font-weight: 800;
+    }
+
+
+    /*
+    =====================================================
+    ADAPTACIÓN PARA IPHONE
+    =====================================================
+    */
 
     @media (max-width: 620px) {
+
       .page {
         padding-left: 10px;
+
         padding-right: 10px;
       }
 
+
       .card {
         padding: 0 16px 20px;
+
         margin-top: 6px;
+
         border-radius: 0;
       }
 
+
       .title {
         margin-left: -1px;
+
         margin-right: -1px;
+
         padding: 14px 8px;
       }
+
 
       .subtitle {
         margin-bottom: 38px;
       }
 
+
       .calculator {
         gap: 34px;
       }
 
+
       .row,
       .row.result {
-        grid-template-columns: minmax(0, 1fr) 124px;
+        grid-template-columns:
+          minmax(0, 1fr)
+          124px;
       }
+
 
       .label {
         padding-left: 8px;
+
         padding-right: 8px;
       }
 
+
       select {
         padding-left: 4px;
+
         padding-right: 24px;
       }
 
+
       .control::after {
         right: 5px;
+
         top: 5px;
+
         border-left-width: 7px;
+
         border-top-width: 7px;
       }
+
 
       .divider {
         margin: 34px 0;
       }
 
+
       .disclaimer {
         margin-top: 34px;
       }
+
+
+      .watermark {
+        width: 65vw;
+
+        height: 65vw;
+      }
+
     }
 
+
     @media (max-width: 390px) {
+
       .card {
         padding-left: 10px;
+
         padding-right: 10px;
       }
 
+
       .row,
       .row.result {
-        grid-template-columns: minmax(0, 1fr) 110px;
+        grid-template-columns:
+          minmax(0, 1fr)
+          110px;
       }
+
 
       .label {
         font-size: 16px;
       }
 
+
       select {
         font-size: 18px;
       }
 
+
       .value {
         font-size: 23px;
       }
+
     }
+
   </style>
 </head>
 
+
 <body>
+
+  <!--
+  MARCA DE AGUA FIJA
+  -->
+  <div
+    class="watermark"
+    aria-hidden="true"
+  ></div>
+
+
   <main class="page">
-    <section class="card" aria-label="Calculadora de clicks">
-      <h1 class="title">Calculadora de clicks</h1>
+
+    <section
+      class="card"
+      aria-label="Calculadora de clicks"
+    >
+
+
+      <h1 class="title">
+        Calculadora de clicks
+      </h1>
+
 
       <p class="subtitle">
-        Ejercicio de proporcionalidad: 60 clicks = 1 dosis completa de la presentación seleccionada
+        Ejercicio de proporcionalidad:
+        60 clicks = 1 dosis completa de la presentación seleccionada
       </p>
 
+
       <div class="calculator">
+
+
+        <!-- PRESENTACIÓN -->
+
         <div class="row pen">
-          <label class="label" for="pen">¿Qué pluma tengo?</label>
+
+          <label
+            class="label"
+            for="pen"
+          >
+            ¿Qué pluma tengo?
+          </label>
+
+
           <div class="control">
-            <select id="pen" aria-label="Presentación de la pluma">
-              <option value="2.5">2.5 mg</option>
-              <option value="5">5 mg</option>
-              <option value="7.5">7.5 mg</option>
-              <option value="10">10 mg</option>
-              <option value="12.5">12.5 mg</option>
-              <option value="15" selected>15 mg</option>
+
+            <select
+              id="pen"
+              aria-label="Presentación de la pluma"
+            >
+
+              <option value="2.5">
+                2.5 mg
+              </option>
+
+              <option value="5">
+                5 mg
+              </option>
+
+              <option value="7.5">
+                7.5 mg
+              </option>
+
+              <option value="10">
+                10 mg
+              </option>
+
+              <option value="12.5">
+                12.5 mg
+              </option>
+
+              <option
+                value="15"
+                selected
+              >
+                15 mg
+              </option>
+
             </select>
+
           </div>
+
         </div>
+
+
+        <!-- DOSIS OBJETIVO -->
 
         <div class="row dose">
-          <label class="label" for="dose">¿Qué dosis quiero calcular?</label>
+
+          <label
+            class="label"
+            for="dose"
+          >
+            ¿Qué dosis quiero calcular?
+          </label>
+
+
           <div class="control">
-            <select id="dose" aria-label="Dosis objetivo">
-              <option value="2.5" selected>2.5 mg</option>
-              <option value="5">5 mg</option>
-              <option value="7.5">7.5 mg</option>
-              <option value="10">10 mg</option>
-              <option value="12.5">12.5 mg</option>
-              <option value="15">15 mg</option>
+
+            <select
+              id="dose"
+              aria-label="Dosis objetivo"
+            >
+
+              <option
+                value="2.5"
+                selected
+              >
+                2.5 mg
+              </option>
+
+              <option value="5">
+                5 mg
+              </option>
+
+              <option value="7.5">
+                7.5 mg
+              </option>
+
+              <option value="10">
+                10 mg
+              </option>
+
+              <option value="12.5">
+                12.5 mg
+              </option>
+
+              <option value="15">
+                15 mg
+              </option>
+
             </select>
+
           </div>
+
         </div>
 
+
+        <!-- RESULTADO -->
+
         <div class="row result">
-          <div class="label">Número de clicks que tengo que contar</div>
-          <div class="value" id="result" aria-live="polite">10 clicks</div>
+
+          <div class="label">
+            Número de clicks que tengo que contar
+          </div>
+
+
+          <div
+            class="value"
+            id="result"
+            aria-live="polite"
+          >
+            10 clicks
+          </div>
+
         </div>
+
+
       </div>
+
 
       <div class="divider"></div>
 
+
+      <!-- FÓRMULA -->
+
       <div class="formula">
-        Fórmula: clicks = (dosis objetivo ÷ dosis completa de la pluma) × 60
+
+        Fórmula: clicks =
+        (dosis objetivo ÷ dosis completa de la pluma) × 60
+
       </div>
+
+
+      <!--
+      ===================================================
+      AVISO IMPORTANTE
+      ===================================================
+      -->
 
       <div class="disclaimer">
-        Esta herramienta automatiza únicamente la proporción indicada.
-        Úsese solo bajo recomendación y supervisión médica.
+
+        <span class="disclaimer-title">
+          AVISO IMPORTANTE
+        </span>
+
+
+        <p>
+          Esta herramienta se proporciona
+          <strong>
+            exclusivamente con fines educativos,
+            informativos y de demostración matemática.
+          </strong>
+          No constituye ni pretende constituir consejo médico,
+          prescripción, diagnóstico, indicación terapéutica,
+          recomendación de tratamiento ni una relación
+          médico-paciente.
+        </p>
+
+
+        <p>
+          Los resultados mostrados representan únicamente
+          cálculos matemáticos teóricos y
+          <strong>
+            no deben utilizarse por sí solos para iniciar,
+            suspender, modificar, fraccionar o administrar
+            un medicamento o tratamiento.
+          </strong>
+        </p>
+
+
+        <p>
+          Esta herramienta no sustituye una prescripción
+          individual, la valoración de un profesional
+          sanitario autorizado, ni el prospecto, etiquetado,
+          ficha técnica o instrucciones oficiales del
+          medicamento y de su fabricante.
+        </p>
+
+
+        <p>
+          Toda decisión relacionada con medicamentos,
+          dosis, presentación, forma de administración o
+          tratamiento debe realizarse de acuerdo con las
+          indicaciones de su médico o profesional sanitario
+          autorizado y con la información oficial aplicable.
+        </p>
+
+
+        <p>
+          En caso de cualquier discrepancia entre el resultado
+          de esta herramienta y una indicación médica,
+          prescripción, prospecto, etiquetado, ficha técnica
+          o instrucción oficial del fabricante,
+          <strong>
+            deberán prevalecer siempre estas últimas.
+          </strong>
+        </p>
+
+
+        <p>
+          El uso de esta herramienta no implica que un cálculo
+          determinado sea clínicamente apropiado, seguro o
+          aplicable a una persona concreta. El usuario es
+          responsable de consultar a un profesional sanitario
+          cualificado antes de tomar cualquier decisión médica
+          o terapéutica.
+        </p>
+
       </div>
 
-      <div class="watermark-note">
-        El logotipo del archivo <strong>logo.png.PNG</strong> se muestra como marca de agua de fondo.
-      </div>
+
     </section>
+
   </main>
 
+
   <script>
-    const pen = document.getElementById("pen");
-    const dose = document.getElementById("dose");
-    const result = document.getElementById("result");
+
+    const pen =
+      document.getElementById("pen");
+
+
+    const dose =
+      document.getElementById("dose");
+
+
+    const result =
+      document.getElementById("result");
+
 
     function calculateClicks() {
-      const penMg = Number(pen.value);
-      const doseMg = Number(dose.value);
 
-      if (!Number.isFinite(penMg) || !Number.isFinite(doseMg) || penMg <= 0) {
+      const penMg =
+        Number(pen.value);
+
+
+      const doseMg =
+        Number(dose.value);
+
+
+      if (
+        !Number.isFinite(penMg) ||
+        !Number.isFinite(doseMg) ||
+        penMg <= 0
+      ) {
+
         result.textContent = "—";
+
         return;
+
       }
 
-      const clicks = Math.round((doseMg / penMg) * 60);
-      result.textContent = `${clicks} ${clicks === 1 ? "click" : "clicks"}`;
+
+      const clicks =
+        Math.round(
+          (doseMg / penMg) * 60
+        );
+
+
+      result.textContent =
+        `${clicks} ${clicks === 1 ? "click" : "clicks"}`;
+
     }
 
-    pen.addEventListener("change", calculateClicks);
-    dose.addEventListener("change", calculateClicks);
+
+    pen.addEventListener(
+      "change",
+      calculateClicks
+    );
+
+
+    dose.addEventListener(
+      "change",
+      calculateClicks
+    );
+
 
     calculateClicks();
+
   </script>
+
+
 </body>
+
 </html>
