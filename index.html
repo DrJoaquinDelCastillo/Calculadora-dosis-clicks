@@ -82,14 +82,6 @@
     =====================================================
     MARCA DE AGUA
     =====================================================
-
-    El logo permanece fijo en el centro de la pantalla.
-
-    Si quiere hacerlo MÁS visible:
-    cambie opacity: 0.08 por 0.10 o 0.12
-
-    Si quiere hacerlo MÁS tenue:
-    cambie opacity: 0.08 por 0.05 o 0.06
     */
 
     .watermark {
@@ -431,7 +423,6 @@
 
     .disclaimer p {
       margin:
-
         0
         0
         12px
@@ -583,9 +574,8 @@
 
 <body>
 
-  <!--
-  MARCA DE AGUA FIJA
-  -->
+  <!-- MARCA DE AGUA FIJA -->
+
   <div
     class="watermark"
     aria-hidden="true"
@@ -614,7 +604,11 @@
       <div class="calculator">
 
 
-        <!-- PRESENTACIÓN -->
+        <!--
+        ===================================================
+        PRESENTACIÓN
+        ===================================================
+        -->
 
         <div class="row pen">
 
@@ -667,7 +661,14 @@
         </div>
 
 
-        <!-- DOSIS OBJETIVO -->
+        <!--
+        ===================================================
+        DOSIS OBJETIVO
+        ===================================================
+
+        El contenido de este menú se actualiza
+        automáticamente según la pluma seleccionada.
+        -->
 
         <div class="row dose">
 
@@ -686,31 +687,9 @@
               aria-label="Dosis objetivo"
             >
 
-              <option
-                value="2.5"
-                selected
-              >
+              <!-- Valor inicial -->
+              <option value="2.5">
                 2.5 mg
-              </option>
-
-              <option value="5">
-                5 mg
-              </option>
-
-              <option value="7.5">
-                7.5 mg
-              </option>
-
-              <option value="10">
-                10 mg
-              </option>
-
-              <option value="12.5">
-                12.5 mg
-              </option>
-
-              <option value="15">
-                15 mg
               </option>
 
             </select>
@@ -720,7 +699,11 @@
         </div>
 
 
-        <!-- RESULTADO -->
+        <!--
+        ===================================================
+        RESULTADO
+        ===================================================
+        -->
 
         <div class="row result">
 
@@ -823,12 +806,11 @@
 
 
         <p>
-  Los resultados de esta herramienta no deben interpretarse
-  como instrucciones de dosificación, administración o
-  modificación de un tratamiento. Ante cualquier duda
-  relacionada con un medicamento, dosis o tratamiento,
-  consulte a un médico o profesional sanitario autorizado.
-</p>
+          Los resultados de esta herramienta no deben interpretarse
+          como instrucciones de dosificación, administración o
+          modificación de un tratamiento. Ante cualquier duda
+          relacionada con un medicamento, dosis o tratamiento,
+          consulte a un médico o profesional sanitario autorizado.
         </p>
 
       </div>
@@ -840,6 +822,22 @@
 
 
   <script>
+
+    /*
+    =====================================================
+    PRESENTACIONES DISPONIBLES
+    =====================================================
+    */
+
+    const availableDoses = [
+      2.5,
+      5,
+      7.5,
+      10,
+      12.5,
+      15
+    ];
+
 
     const pen =
       document.getElementById("pen");
@@ -853,6 +851,125 @@
       document.getElementById("result");
 
 
+    /*
+    =====================================================
+    FORMATEAR DOSIS
+    =====================================================
+    */
+
+    function doseLabel(value) {
+
+      return `${value} mg`;
+
+    }
+
+
+    /*
+    =====================================================
+    ACTUALIZAR DOSIS PERMITIDAS
+    =====================================================
+
+    El menú de dosis objetivo solo mostrará
+    valores iguales o inferiores a la
+    presentación de la pluma seleccionada.
+    */
+
+    function updateDoseOptions() {
+
+      const penMg =
+        Number(pen.value);
+
+
+      const previousDose =
+        Number(dose.value);
+
+
+      const allowedDoses =
+        availableDoses.filter(
+          value => value <= penMg
+        );
+
+
+      /*
+      Vaciar el menú actual.
+      */
+
+      dose.innerHTML = "";
+
+
+      /*
+      Crear únicamente las opciones permitidas.
+      */
+
+      allowedDoses.forEach(
+        function(value) {
+
+          const option =
+            document.createElement("option");
+
+
+          option.value =
+            String(value);
+
+
+          option.textContent =
+            doseLabel(value);
+
+
+          dose.appendChild(option);
+
+        }
+      );
+
+
+      /*
+      Si la dosis seleccionada anteriormente
+      continúa siendo válida, se conserva.
+
+      Ejemplo:
+      tenía 2.5 mg y cambia de pluma
+      de 10 mg a 15 mg -> mantiene 2.5 mg.
+      */
+
+      if (
+        allowedDoses.includes(previousDose)
+      ) {
+
+        dose.value =
+          String(previousDose);
+
+      }
+
+      /*
+      Si la dosis anterior era superior
+      a la nueva pluma, selecciona
+      automáticamente la dosis correspondiente
+      a la propia presentación.
+
+      Ejemplo:
+      estaba en pluma 15 mg / dosis 12.5 mg
+      y cambia a pluma 5 mg -> queda 5 mg.
+      */
+
+      else {
+
+        dose.value =
+          String(penMg);
+
+      }
+
+
+      calculateClicks();
+
+    }
+
+
+    /*
+    =====================================================
+    CALCULAR CLICKS
+    =====================================================
+    */
+
     function calculateClicks() {
 
       const penMg =
@@ -863,18 +980,51 @@
         Number(dose.value);
 
 
+      /*
+      Validación básica.
+      */
+
       if (
         !Number.isFinite(penMg) ||
         !Number.isFinite(doseMg) ||
-        penMg <= 0
+        penMg <= 0 ||
+        doseMg <= 0
       ) {
 
-        result.textContent = "—";
+        result.textContent =
+          "—";
 
         return;
 
       }
 
+
+      /*
+      ===================================================
+      PROTECCIÓN ADICIONAL
+      ===================================================
+
+      Aunque el menú ya impide seleccionar
+      dosis superiores, se comprueba nuevamente
+      antes de efectuar el cálculo.
+      */
+
+      if (
+        doseMg > penMg
+      ) {
+
+        result.textContent =
+          "No disponible";
+
+        return;
+
+      }
+
+
+      /*
+      Regla matemática:
+      dosis objetivo / dosis completa × 60.
+      */
 
       const clicks =
         Math.round(
@@ -888,11 +1038,28 @@
     }
 
 
+    /*
+    =====================================================
+    EVENTOS
+    =====================================================
+    */
+
+
+    /*
+    Cuando cambia la pluma:
+    reconstruir el menú de dosis.
+    */
+
     pen.addEventListener(
       "change",
-      calculateClicks
+      updateDoseOptions
     );
 
+
+    /*
+    Cuando cambia la dosis:
+    recalcular.
+    */
 
     dose.addEventListener(
       "change",
@@ -900,7 +1067,15 @@
     );
 
 
-    calculateClicks();
+    /*
+    =====================================================
+    INICIALIZACIÓN
+    =====================================================
+    */
+
+
+    updateDoseOptions();
+
 
   </script>
 
